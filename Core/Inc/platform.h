@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#ifdef STM32G071xx
+#ifdef STM32G070xx
 #include "stm32G0xx_hal.h"
 #else 
 #include "stm32f4xx_hal.h"

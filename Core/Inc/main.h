@@ -73,6 +73,7 @@ int32_t BSP_SPI1_SendRecv(const uint8_t * const pTxData, uint8_t * const pRxData
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
+
 /* USER CODE BEGIN Private defines */
 #define ST25R3916
 #define STACK_TIM3_PRESCALER 3
@@ -83,15 +84,15 @@ int32_t BSP_SPI1_SendRecv(const uint8_t * const pTxData, uint8_t * const pRxData
 #define LED6_GPIO_Port GPIOA
 #define LED7_Pin GPIO_PIN_10
 #define LED7_GPIO_Port GPIOB
-#define LED4_Pin GPIO_PIN_15
-#define LED4_GPIO_Port GPIOA
-#define LED5_Pin GPIO_PIN_0
-#define LED5_GPIO_Port GPIOD
+//#define LED4_Pin GPIO_PIN_15
+//#define LED4_GPIO_Port GPIOA
+//#define LED5_Pin GPIO_PIN_0
+//#define LED5_GPIO_Port GPIOD
 #define ST25R_SPI_INT_Pin GPIO_PIN_0
 #define ST25R_SPI_INT_GPIO_Port GPIOA
 #define ST25R_SPI_INT_EXTI_IRQn EXTI0_1_IRQn
-#define ST25R_SPI_SS_Pin GPIO_PIN_0
-#define ST25R_SPI_SS_GPIO_Port GPIOB
+#define ST25R_SPI_SS_Pin GPIO_PIN_4
+#define ST25R_SPI_SS_GPIO_Port GPIOA
 
 #define USE_LOGGER 1
 /* USER CODE END Private defines */
@@ -101,5 +102,3 @@ int32_t BSP_SPI1_SendRecv(const uint8_t * const pTxData, uint8_t * const pRxData
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
