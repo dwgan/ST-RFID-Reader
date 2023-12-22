@@ -8,3 +8,13 @@ Software: STM32CubeIDE 1.14.0, STM32CubeMx 6.10.0
 
 Firmware Package: STM32Cube FW_G0 V1.6.1
 
+## How to use
+
+This repository contain to branch including ST-RFID-Reader project for NUCLEO-G071RB (**main**) and STKNX-development-board (STM32G070CBxx) (**master**).
+
+To change to another branch:
+
+```
+git checkout [target branch name]
+```
+
