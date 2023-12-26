@@ -353,8 +353,8 @@ void demoCycle( void )
         
             if( rfalNfcIsDevActivated( rfalNfcGetState() ) )    //��⵽�п�      
             {
-								HAL_GPIO_WritePin(LED6_GPIO_Port,LED6_Pin,GPIO_PIN_SET);
-								HAL_GPIO_WritePin(LED7_GPIO_Port,LED7_Pin,GPIO_PIN_SET);
+//								HAL_GPIO_WritePin(LED6_GPIO_Port,LED6_Pin,GPIO_PIN_SET);
+//								HAL_GPIO_WritePin(LED7_GPIO_Port,LED7_Pin,GPIO_PIN_SET);
 //								StackBaseSetDioLevel(1);
                 rfalNfcGetActiveDevice( &nfcDevice );
 								p_id = hex2Str( nfcDevice->nfcid, nfcDevice->nfcidLen );								
@@ -520,7 +520,7 @@ void demoCycle( void )
             }
             else
             {
-							HAL_GPIO_WritePin(LED6_GPIO_Port,LED6_Pin,GPIO_PIN_RESET);
+//							HAL_GPIO_WritePin(LED6_GPIO_Port,LED6_Pin,GPIO_PIN_RESET);
             }
             break;
 

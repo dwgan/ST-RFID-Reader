@@ -65,14 +65,15 @@ int32_t BSP_SPI1_SendRecv(const uint8_t * const pTxData, uint8_t * const pRxData
 /* Private defines -----------------------------------------------------------*/
 #define MCO_Pin GPIO_PIN_0
 #define MCO_GPIO_Port GPIOF
-#define USART2_TX_Pin GPIO_PIN_2
-#define USART2_TX_GPIO_Port GPIOA
-#define USART2_RX_Pin GPIO_PIN_3
-#define USART2_RX_GPIO_Port GPIOA
+#define ST25R3916_IRQ_Pin GPIO_PIN_0
+#define ST25R3916_IRQ_GPIO_Port GPIOA
+#define ST25R3916_IRQ_EXTI_IRQn EXTI0_1_IRQn
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
+#define SPI1_CS_Pin GPIO_PIN_6
+#define SPI1_CS_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 #define ST25R3916
@@ -80,19 +81,19 @@ int32_t BSP_SPI1_SendRecv(const uint8_t * const pTxData, uint8_t * const pRxData
 #define SYSCLOCK_FREQUENCY 32000000
 #define STACK_TIM3_FREQ 10000
 #define STACK_TIM3_PERIOD ((SYSCLOCK_FREQUENCY/(STACK_TIM3_FREQ * (STACK_TIM3_PRESCALER + 1))) - 1)
-#define LED6_Pin GPIO_PIN_8
-#define LED6_GPIO_Port GPIOA
-#define LED7_Pin GPIO_PIN_10
-#define LED7_GPIO_Port GPIOB
+//#define LED6_Pin GPIO_PIN_8
+//#define LED6_GPIO_Port GPIOA
+//#define LED7_Pin GPIO_PIN_10
+//#define LED7_GPIO_Port GPIOB
 //#define LED4_Pin GPIO_PIN_15
 //#define LED4_GPIO_Port GPIOA
 //#define LED5_Pin GPIO_PIN_0
 //#define LED5_GPIO_Port GPIOD
-#define ST25R_SPI_INT_Pin GPIO_PIN_0
-#define ST25R_SPI_INT_GPIO_Port GPIOA
-#define ST25R_SPI_INT_EXTI_IRQn EXTI0_1_IRQn
-#define ST25R_SPI_SS_Pin GPIO_PIN_4
-#define ST25R_SPI_SS_GPIO_Port GPIOA
+#define ST25R_SPI_INT_Pin ST25R3916_IRQ_Pin
+#define ST25R_SPI_INT_GPIO_Port ST25R3916_IRQ_GPIO_Port
+#define ST25R_SPI_INT_EXTI_IRQn ST25R3916_IRQ_EXTI_IRQn
+#define ST25R_SPI_SS_Pin SPI1_CS_Pin
+#define ST25R_SPI_SS_GPIO_Port SPI1_CS_GPIO_Port
 
 #define USE_LOGGER 1
 /* USER CODE END Private defines */
