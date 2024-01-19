@@ -75,7 +75,7 @@ UART_HandleTypeDef *pLogUsart = 0;   /*!< pointer to the logger Handler */
   */ 
 
 /* Private function prototypes -----------------------------------------------*/
-uint8_t logUsartTx(uint8_t *data, uint16_t dataLen);
+HAL_StatusTypeDef logUsartTx(uint8_t *data, uint16_t dataLen);
 
 /* Private functions ---------------------------------------------------------*/
 /** @defgroup PTD_Logger_Private_Functions
