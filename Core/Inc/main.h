@@ -95,8 +95,12 @@ int32_t BSP_SPI1_SendRecv(const uint8_t * const pTxData, uint8_t * const pRxData
 #define ST25R_SPI_SS_Pin SPI1_CS_Pin
 #define ST25R_SPI_SS_GPIO_Port SPI1_CS_GPIO_Port
 
-#define USE_LOGGER 1
-#define DEMO_NO_DELAY_IN_DEMOCYCLE
+#define USE_UART_PORT_AS_GPIO 1
+#define NFC_Detected() HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, 1)
+#define NFC_Undetected() HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, 0)
+
+#define USE_LOGGER 0
+//#define DEMO_NO_DELAY_IN_DEMOCYCLE
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -386,6 +386,9 @@ void rfalNfcWorker( void )
 //										HAL_GPIO_WritePin(LED6_GPIO_Port,LED6_Pin,GPIO_PIN_RESET);
 //										HAL_GPIO_WritePin(LED7_GPIO_Port,LED7_Pin,GPIO_PIN_RESET);
 ////										StackBaseSetDioLevel(0);
+#if USE_UART_PORT_AS_GPIO
+                        	   NFC_Undetected();
+#endif
                     break;
                 }
                 

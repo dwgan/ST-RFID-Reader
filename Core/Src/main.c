@@ -20,7 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "spi.h"
-#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -51,7 +50,7 @@
 
 /* USER CODE BEGIN PV */
 uint8_t globalCommProtectCnt = 0; /*!< Global Protection counter */
-UART_HandleTypeDef hlogger; /*!< Handler to the UART HW logger */
+//UART_HandleTypeDef hlogger; /*!< Handler to the UART HW logger */
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,11 +93,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
-  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-//  HAL_Delay(1000);
+  HAL_Delay(1000);
   demoIni();
-  logUsartInit(&huart2);
+//  logUsartInit(&huart2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,7 +105,7 @@ int main(void)
   {
   	demoCycle();
 //	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-//  	HAL_Delay(10);
+//  	HAL_Delay(5);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

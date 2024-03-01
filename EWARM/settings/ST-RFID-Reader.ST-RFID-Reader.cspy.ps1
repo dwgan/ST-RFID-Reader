@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\KNX\KNX_Demo\STKNX-RFID\ST-RFID-Reader\EWARM\settings\ST-RFID-Reader.ST-RFID-Reader.general.xcl" --backend -f "D:\KNX\KNX_Demo\STKNX-RFID\ST-RFID-Reader\EWARM\settings\ST-RFID-Reader.ST-RFID-Reader.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\KNX\KNX_Demo\STKNX_ChargeStation\ST-RFID-Reader\EWARM\settings\ST-RFID-Reader.ST-RFID-Reader.general.xcl" --backend -f "D:\KNX\KNX_Demo\STKNX_ChargeStation\ST-RFID-Reader\EWARM\settings\ST-RFID-Reader.ST-RFID-Reader.driver.xcl" 
 }
 else
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\KNX\KNX_Demo\STKNX-RFID\ST-RFID-Reader\EWARM\settings\ST-RFID-Reader.ST-RFID-Reader.general.xcl" --debug_file=$debugfile --backend -f "D:\KNX\KNX_Demo\STKNX-RFID\ST-RFID-Reader\EWARM\settings\ST-RFID-Reader.ST-RFID-Reader.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\KNX\KNX_Demo\STKNX_ChargeStation\ST-RFID-Reader\EWARM\settings\ST-RFID-Reader.ST-RFID-Reader.general.xcl" --debug_file=$debugfile --backend -f "D:\KNX\KNX_Demo\STKNX_ChargeStation\ST-RFID-Reader\EWARM\settings\ST-RFID-Reader.ST-RFID-Reader.driver.xcl" 
 }

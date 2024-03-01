@@ -353,6 +353,9 @@ void demoCycle( void )
         
             if( rfalNfcIsDevActivated( rfalNfcGetState() ) )    //��⵽�п�      
             {
+#if USE_UART_PORT_AS_GPIO
+                        	   NFC_Detected();
+#endif
 //								HAL_GPIO_WritePin(LED6_GPIO_Port,LED6_Pin,GPIO_PIN_SET);
 //								HAL_GPIO_WritePin(LED7_GPIO_Port,LED7_Pin,GPIO_PIN_SET);
 //								StackBaseSetDioLevel(1);

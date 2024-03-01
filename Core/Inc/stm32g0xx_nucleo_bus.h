@@ -120,7 +120,7 @@ typedef struct
   * @{
   */
 
-extern UART_HandleTypeDef huart1;
+//extern UART_HandleTypeDef huart1;
 extern SPI_HandleTypeDef hspi1;
 
 /**

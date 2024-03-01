@@ -56,8 +56,8 @@ static uint32_t SPI1InitCounter = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 
-static void USART1_MspInit(UART_HandleTypeDef* huart);
-static void USART1_MspDeInit(UART_HandleTypeDef* huart);
+//static void USART1_MspInit(UART_HandleTypeDef* huart);
+//static void USART1_MspDeInit(UART_HandleTypeDef* huart);
 static void SPI1_MspInit(SPI_HandleTypeDef* hSPI);
 static void SPI1_MspDeInit(SPI_HandleTypeDef* hSPI);
 #if (USE_CUBEMX_BSP_V2 == 1)
@@ -88,70 +88,70 @@ static uint32_t Compute_SCLL_SCLH (uint32_t clock_src_freq, uint32_t I2C_speed);
   * @brief  Initializes USART HAL.
   * @retval BSP status
   */
-int32_t BSP_USART1_Init(void)
-{
-  int32_t ret = BSP_ERROR_NONE;
-
-  huart1.Instance  = USART1;
-  USART1InitCounter++;
-
-  if (USART1InitCounter == 0U)
-  {
-    if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_RESET)
-    {
-
-#if (USE_HAL_UART_REGISTER_CALLBACKS == 0U)
-      /* Init the UART Msp */
-      USART1_MspInit(&huart1);
-
-      /* Init the UART */
-      MX_USART1_UART_Init();
-#else
-      if (IsUSART1MspCbValid == 0U)
-      {
-        if(BSP_USART1_RegisterDefaultMspCallbacks() != BSP_ERROR_NONE)
-        {
-          ret = BSP_ERROR_MSP_FAILURE;
-        }
-      }
-
-      if (ret == BSP_ERROR_NONE)
-      {
-        /* Init the UART */
-        MX_USART1_UART_Init();
-      }
-#endif
-    }
-  }
-  return ret;
-}
+//int32_t BSP_USART1_Init(void)
+//{
+//  int32_t ret = BSP_ERROR_NONE;
+//
+//  huart1.Instance  = USART1;
+//  USART1InitCounter++;
+//
+//  if (USART1InitCounter == 0U)
+//  {
+//    if (HAL_UART_GetState(&huart1) == HAL_UART_STATE_RESET)
+//    {
+//
+//#if (USE_HAL_UART_REGISTER_CALLBACKS == 0U)
+//      /* Init the UART Msp */
+//      USART1_MspInit(&huart1);
+//
+//      /* Init the UART */
+//      MX_USART1_UART_Init();
+//#else
+//      if (IsUSART1MspCbValid == 0U)
+//      {
+//        if(BSP_USART1_RegisterDefaultMspCallbacks() != BSP_ERROR_NONE)
+//        {
+//          ret = BSP_ERROR_MSP_FAILURE;
+//        }
+//      }
+//
+//      if (ret == BSP_ERROR_NONE)
+//      {
+//        /* Init the UART */
+//        MX_USART1_UART_Init();
+//      }
+//#endif
+//    }
+//  }
+//  return ret;
+//}
 
 /**
   * @brief  DeInitializes UART HAL.
   * @retval BSP status
   */
-int32_t BSP_USART1_DeInit(void)
-{
-  int32_t ret = BSP_ERROR_BUS_FAILURE;
-
-  if (USART1InitCounter > 0U)
-  {
-    USART1InitCounter--;
-
-    if (USART1InitCounter == 0U)
-    {
-#if (USE_HAL_UART_REGISTER_CALLBACKS == 0U)
-      USART1_MspDeInit(&huart1);
-#endif
-      /* DeInit the UART*/
-      if (HAL_UART_DeInit(&huart1) == HAL_OK)
-      {
-        ret = BSP_ERROR_NONE;
-      }
-    }
-  }
-  return ret;
-}
+//int32_t BSP_USART1_DeInit(void)
+//{
+//  int32_t ret = BSP_ERROR_BUS_FAILURE;
+//
+//  if (USART1InitCounter > 0U)
+//  {
+//    USART1InitCounter--;
+//
+//    if (USART1InitCounter == 0U)
+//    {
+//#if (USE_HAL_UART_REGISTER_CALLBACKS == 0U)
+//      USART1_MspDeInit(&huart1);
+//#endif
+//      /* DeInit the UART*/
+//      if (HAL_UART_DeInit(&huart1) == HAL_OK)
+//      {
+//        ret = BSP_ERROR_NONE;
+//      }
+//    }
+//  }
+//  return ret;
+//}
 
 /**
   * @brief  Write Data through UART BUS.
@@ -163,10 +163,10 @@ int32_t BSP_USART1_Send(uint8_t *pData, uint16_t Length)
 {
   int32_t ret = BSP_ERROR_UNKNOWN_FAILURE;
 
-  if (HAL_UART_Transmit(&huart1, pData, Length, BUS_USART1_POLL_TIMEOUT) == HAL_OK)
-  {
-      ret = BSP_ERROR_NONE;
-  }
+//  if (HAL_UART_Transmit(&huart1, pData, Length, BUS_USART1_POLL_TIMEOUT) == HAL_OK)
+//  {
+//      ret = BSP_ERROR_NONE;
+//  }
   return ret;
 }
 
@@ -180,10 +180,10 @@ int32_t  BSP_USART1_Recv(uint8_t *pData, uint16_t Length)
 {
   int32_t ret = BSP_ERROR_UNKNOWN_FAILURE;
 
-  if (HAL_UART_Receive(&huart1, pData, Length, BUS_USART1_POLL_TIMEOUT) == HAL_OK)
-  {
-      ret = BSP_ERROR_NONE;
-  }
+//  if (HAL_UART_Receive(&huart1, pData, Length, BUS_USART1_POLL_TIMEOUT) == HAL_OK)
+//  {
+//      ret = BSP_ERROR_NONE;
+//  }
   return ret;
 }
 
@@ -486,57 +486,57 @@ static void SPI1_MspDeInit(SPI_HandleTypeDef* spiHandle)
 
 /* USART1 init function */
 
-static void USART1_MspInit(UART_HandleTypeDef* uartHandle)
-{
-  UNUSED(uartHandle);
+//static void USART1_MspInit(UART_HandleTypeDef* uartHandle)
+//{
+//  UNUSED(uartHandle);
+//
+//  GPIO_InitTypeDef GPIO_InitStruct;
+//
+//  /* Enable Peripheral clock */
+//    __HAL_RCC_USART1_CLK_ENABLE();
+//
+//    __HAL_RCC_GPIOA_CLK_ENABLE();
+//    /**USART1 GPIO Configuration
+//    PA9     ------> USART1_TX
+//    PA10     ------> USART1_RX
+//    */
+//    GPIO_InitStruct.Pin = BUS_USART1_TX_GPIO_PIN;
+//    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//    GPIO_InitStruct.Pull = GPIO_PULLUP;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+//    GPIO_InitStruct.Alternate = BUS_USART1_TX_GPIO_AF;
+//    HAL_GPIO_Init(BUS_USART1_TX_GPIO_PORT, &GPIO_InitStruct);
+//
+//    GPIO_InitStruct.Pin = BUS_USART1_RX_GPIO_PIN;
+//    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+//    GPIO_InitStruct.Alternate = BUS_USART1_RX_GPIO_AF;
+//    HAL_GPIO_Init(BUS_USART1_RX_GPIO_PORT, &GPIO_InitStruct);
+//
+//    /* Peripheral interrupt init */
+//    HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);
+//    HAL_NVIC_EnableIRQ(USART1_IRQn);
+//}
 
-  GPIO_InitTypeDef GPIO_InitStruct;
-
-  /* Enable Peripheral clock */
-    __HAL_RCC_USART1_CLK_ENABLE();
-
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**USART1 GPIO Configuration
-    PA9     ------> USART1_TX
-    PA10     ------> USART1_RX
-    */
-    GPIO_InitStruct.Pin = BUS_USART1_TX_GPIO_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = BUS_USART1_TX_GPIO_AF;
-    HAL_GPIO_Init(BUS_USART1_TX_GPIO_PORT, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = BUS_USART1_RX_GPIO_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = BUS_USART1_RX_GPIO_AF;
-    HAL_GPIO_Init(BUS_USART1_RX_GPIO_PORT, &GPIO_InitStruct);
-
-    /* Peripheral interrupt init */
-    HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);
-    HAL_NVIC_EnableIRQ(USART1_IRQn);
-}
-
-static void USART1_MspDeInit(UART_HandleTypeDef* uartHandle)
-{
-    UNUSED(uartHandle);
-
-    /* Peripheral clock disable */
-    __HAL_RCC_USART1_CLK_DISABLE();
-
-    /**USART1 GPIO Configuration
-    PA9     ------> USART1_TX
-    PA10     ------> USART1_RX
-    */
-    HAL_GPIO_DeInit(BUS_USART1_TX_GPIO_PORT, BUS_USART1_TX_GPIO_PIN);
-
-    HAL_GPIO_DeInit(BUS_USART1_RX_GPIO_PORT, BUS_USART1_RX_GPIO_PIN);
-
-    /* Peripheral interrupt Deinit*/
-    HAL_NVIC_DisableIRQ(USART1_IRQn);
-}
+//static void USART1_MspDeInit(UART_HandleTypeDef* uartHandle)
+//{
+//    UNUSED(uartHandle);
+//
+//    /* Peripheral clock disable */
+//    __HAL_RCC_USART1_CLK_DISABLE();
+//
+//    /**USART1 GPIO Configuration
+//    PA9     ------> USART1_TX
+//    PA10     ------> USART1_RX
+//    */
+//    HAL_GPIO_DeInit(BUS_USART1_TX_GPIO_PORT, BUS_USART1_TX_GPIO_PIN);
+//
+//    HAL_GPIO_DeInit(BUS_USART1_RX_GPIO_PORT, BUS_USART1_RX_GPIO_PIN);
+//
+//    /* Peripheral interrupt Deinit*/
+//    HAL_NVIC_DisableIRQ(USART1_IRQn);
+//}
 
 #if (USE_CUBEMX_BSP_V2 == 1)
 /**
