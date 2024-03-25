@@ -356,10 +356,10 @@
                     <state>$PROJ_DIR$/../Core/Inc</state>
                     <state>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Inc</state>
                     <state>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy</state>
-                    <state>$PROJ_DIR$/../Drivers/CMSIS/Device/ST/STM32G0xx/Include</state>
                     <state>$PROJ_DIR$/../Drivers/CMSIS/Include</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\ST25R3916</state>
                     <state>$PROJ_DIR$\..\Drivers\Middlewares\ST\rfal\Inc</state>
+                    <state>$PROJ_DIR$\..\Drivers\CMSIS\Device\ST\STM32G0xx\Include</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>

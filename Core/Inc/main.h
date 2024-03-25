@@ -96,7 +96,7 @@ int32_t BSP_SPI1_SendRecv(const uint8_t * const pTxData, uint8_t * const pRxData
 #define ST25R_SPI_SS_GPIO_Port SPI1_CS_GPIO_Port
 
 #define USE_LOGGER 1
-#define DEMO_NO_DELAY_IN_DEMOCYCLE
+//#define DEMO_NO_DELAY_IN_DEMOCYCLE
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

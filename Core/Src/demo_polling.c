@@ -303,7 +303,7 @@ bool demoIni( void )
             return false;
         }
 
-        state = DEMO_ST_START_DISCOVERY;
+		state = DEMO_ST_START_DISCOVERY;
         return true;
     }
     return false;
@@ -357,7 +357,8 @@ void demoCycle( void )
 //								HAL_GPIO_WritePin(LED7_GPIO_Port,LED7_Pin,GPIO_PIN_SET);
 //								StackBaseSetDioLevel(1);
                 rfalNfcGetActiveDevice( &nfcDevice );
-								p_id = hex2Str( nfcDevice->nfcid, nfcDevice->nfcidLen );								
+                rfalNfcDeactivate( RFAL_NFC_DEACTIVATE_IDLE );
+                p_id = hex2Str( nfcDevice->nfcid, nfcDevice->nfcidLen );
                 switch( nfcDevice->type )
                 {
                     /*******************************************************************************/
@@ -503,7 +504,6 @@ void demoCycle( void )
                         break;
                 }
                 
-                rfalNfcDeactivate( RFAL_NFC_DEACTIVATE_IDLE );
 
 #if !defined(DEMO_NO_DELAY_IN_DEMOCYCLE)
                 switch( nfcDevice->type )
