@@ -1139,9 +1139,6 @@
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\stm32g0xx_nucleo_bus.c</name>
                 </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\usart.c</name>
-                </file>
             </group>
         </group>
     </group>
@@ -1292,12 +1289,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_tim_ex.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_uart.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_uart_ex.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_ll_dma.c</name>

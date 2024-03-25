@@ -20,3 +20,12 @@ To change to another branch:
 git checkout [target branch name]
 ```
 
+
+
+## Variant for Charge Station
+
+This version is not a full version, which is modified to support RFID detection for charge station. 
+
+This version only support the type of the card of NFCA and NFCV.
+
+It's recommended to use IAR compiler rather than STM32CubeIDE due to some unknown problem.
