@@ -6,13 +6,12 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -20,16 +19,21 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "spi.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32g0xx_ll_bus.h"
+#include "stm32g0xx_ll_rcc.h"
+#include "stm32g0xx_ll_system.h"
+#include "stm32g0xx_ll_utils.h"
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 #include "demo.h"
-#include "platform.h"
-#include "logger.h"
-#include "st_errno.h"
-#include "rfal_rf.h"
-#include "rfal_analogConfig.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -39,6 +43,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,18 +55,107 @@
 
 /* USER CODE BEGIN PV */
 uint8_t globalCommProtectCnt = 0; /*!< Global Protection counter */
-//UART_HandleTypeDef hlogger; /*!< Handler to the UART HW logger */
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
+extern bool demoIni( void );
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+__IO uint8_t ubSend = 0;
+uint8_t aStringToSend[] = "STM32G0xx USART LL API Example : TX in IT mode\r\nConfiguration UART 115200 bps, 8 data bit/1 stop bit/No parity/No HW flow control\r\n";
+uint8_t ubSizeToSend = sizeof(aStringToSend);
 
+void USART_TXEmpty_Callback(void)
+{
+  if (ubSend == (ubSizeToSend - 1))
+  {
+    /* Disable TXE interrupt */
+    LL_USART_DisableIT_TXE(USART2);
+
+    /* Enable TC interrupt */
+    LL_USART_EnableIT_TC(USART2);
+  }
+
+  /* Fill TDR with a new char */
+  LL_USART_TransmitData8(USART2, aStringToSend[ubSend++]);
+}
+
+void USART_SendStringData(unsigned char * datasource, unsigned char sendsize)
+{
+  unsigned char i;
+  for(i =0 ;i < sendsize; i++)
+  {
+    aStringToSend[i] = (datasource[i]);
+  }
+  ubSizeToSend = sendsize;
+  ubSend = 0;
+  
+  /* Start USART transmission : Will initiate TXE interrupt after TDR register is empty */
+  LL_USART_TransmitData8(USART2, aStringToSend[ubSend++]);
+  
+  /* Enable TXE interrupt */
+  LL_USART_EnableIT_TXE(USART2);
+  
+}
+void USART_CharTransmitComplete_Callback(void)
+{
+  if (ubSend == sizeof(aStringToSend))
+  {
+    ubSend = 0;
+
+    /* Disable TC interrupt */
+    LL_USART_DisableIT_TC(USART2);
+
+    /* Turn LED4 On at end of transfer : Tx sequence completed successfully */
+  //  LED_On();
+  }
+}
+void USART_CharReception_Callback(void)
+{
+  uint8_t received_char;
+
+  /* Read Received character. RXNE flag is cleared by reading of RDR register */
+  received_char = LL_USART_ReceiveData8(USART2);
+
+  //UART_ReceiveData_ApplicationProcess(received_char);
+
+  /* Echo received character on TX */
+  LL_USART_TransmitData8(USART2, received_char);
+
+}
+void Error_Callback(void)
+{
+  __IO uint32_t isr_reg;
+
+  /* Disable USARTx_IRQn */
+  NVIC_DisableIRQ(USART2_IRQn);
+
+  /* Error handling example :
+    - Read USART ISR register to identify flag that leads to IT raising
+    - Perform corresponding error handling treatment according to flag
+  */
+  isr_reg = LL_USART_ReadReg(USART2, ISR);
+  if (isr_reg & LL_USART_ISR_NE)
+  {
+    /* case Noise Error flag is raised : ... */
+   ;// LED_Blinking(LED_BLINK_FAST);
+  }
+  else
+  {
+    /* Unexpected IT source : Set LED to Blinking mode to indicate error occurs */
+  ;//  LED_Blinking(LED_BLINK_ERROR);
+  }
+}
+extern uint32_t LL_Tick;
+uint32_t LL_GetTick(void) {
+    return LL_Tick;
+}
 /* USER CODE END 0 */
 
 /**
@@ -71,41 +165,48 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+
+  /* SysTick_IRQn interrupt configuration */
+  NVIC_SetPriority(SysTick_IRQn, 3);
+
+  /** Disable the internal Pull-Up in Dead Battery pins of UCPD peripheral
+  */
+  LL_SYSCFG_DisableDBATT(LL_SYSCFG_UCPD1_STROBE | LL_SYSCFG_UCPD2_STROBE);
 
   /* USER CODE BEGIN Init */
-
+  
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_Delay(1000);
+  
+//  USART_SendStringData(aStringToSend, ubSizeToSend);
   demoIni();
-//  logUsartInit(&huart2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  	demoCycle();
-//	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-//  	HAL_Delay(5);
+    demoCycle(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -119,79 +220,55 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-  /** Configure the main internal regulator output voltage
-  */
-  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  /* HSI configuration and activation */
+  LL_RCC_HSI_Enable();
+  while(LL_RCC_HSI_IsReady() != 1)
   {
-    Error_Handler();
   }
 
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  /* Main PLL configuration and activation */
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLLM_DIV_1, 8, LL_RCC_PLLR_DIV_2);
+  LL_RCC_PLL_Enable();
+  LL_RCC_PLL_EnableDomain_SYS();
+  while(LL_RCC_PLL_IsReady() != 1)
   {
-    Error_Handler();
   }
+
+  /* Set AHB prescaler*/
+  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_4);
+
+  /* Sysclk activation on the main PLL */
+  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
+  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL)
+  {
+  }
+
+  /* Set APB1 prescaler*/
+  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+  LL_Init1msTick(16000000);
+  /* Update CMSIS variable (which can be updated also through SystemCoreClockUpdate function) */
+  LL_SetSystemCoreClock(16000000);
 }
 
 /* USER CODE BEGIN 4 */
-/**
- *   @brief SPI Read and Write byte(s) to device
- * 	@param[in] pTxData : Pointer to data buffer to write
- *	@param[out] pRxData : Pointer to data buffer for read data
- *	@param[in] Length : number of bytes to write
- *	@return	BSP status
- */
-int32_t BSP_SPI1_SendRecv(const uint8_t *const pTxData, uint8_t *const pRxData,
-		uint16_t Length)
+int32_t BSP_SPI1_SendRecv_LL(const uint8_t *const pTxData, uint8_t *const pRxData, uint16_t Length)
 {
-	HAL_StatusTypeDef status = HAL_ERROR;
-	int32_t ret = ERR_NONE;
-
-	if ((pTxData != NULL) && (pRxData != NULL))
-	{
-		status = HAL_SPI_TransmitReceive(&hspi1, (uint8_t*) pTxData,
-				(uint8_t*) pRxData, Length, 2000U);
-	}
-	else if ((pTxData != NULL) && (pRxData == NULL))
-	{
-		status = HAL_SPI_Transmit(&hspi1, (uint8_t*) pTxData, Length, 2000U);
-	}
-	else if ((pTxData == NULL) && (pRxData != NULL))
-	{
-		status = HAL_SPI_Receive(&hspi1, (uint8_t*) pRxData, Length, 2000U);
-	}
-	else
-	{
-		ret = ERR_PARAM;
-	}
-
-	/* Check the communication status */
-	if (status != HAL_OK)
-	{
-		/* Execute user timeout callback */MX_SPI1_Init();
-	}
-
-	return ret;
+  uint16_t i = 0;
+  if ((pTxData == NULL && pRxData == NULL) || (Length == 0)) {
+    return -1;  // 参数检查
+  }
+  
+  for (i = 0; i < Length; i++) {
+    while (!LL_SPI_IsActiveFlag_TXE(SPI1));  // 等待，直到发送缓冲区为空
+    LL_SPI_TransmitData8(SPI1, pTxData[i]);  // 发送数据
+    
+    while (!LL_SPI_IsActiveFlag_RXNE(SPI1));  // 等待，直到接收缓冲区非空
+    pRxData[i] = LL_SPI_ReceiveData8(SPI1);   // 接收数据
+    
+    while (LL_SPI_IsActiveFlag_BSY(SPI1));  // 确保SPI不忙，完成当前传输
+  }
+  
+  return 0;  // 成功执行
 }
 
 /* USER CODE END 4 */

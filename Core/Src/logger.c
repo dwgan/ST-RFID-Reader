@@ -22,7 +22,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
-
+#include <stdint.h>
 
 /** @addtogroup X-CUBE-NFC6_Applications
  *  @{
@@ -69,13 +69,13 @@ uint8_t hexStrIdx = 0;
 /** @defgroup PTD_Logger_Private_Variables
  * @{
  */
-UART_HandleTypeDef *pLogUsart = 0;   /*!< pointer to the logger Handler */
+//UART_HandleTypeDef *pLogUsart = 0;   /*!< pointer to the logger Handler */
 /**
   * @}
   */ 
 
 /* Private function prototypes -----------------------------------------------*/
-HAL_StatusTypeDef logUsartTx(uint8_t *data, uint16_t dataLen);
+//HAL_StatusTypeDef logUsartTx(uint8_t *data, uint16_t dataLen);
 
 /* Private functions ---------------------------------------------------------*/
 /** @defgroup PTD_Logger_Private_Functions
@@ -90,22 +90,22 @@ HAL_StatusTypeDef logUsartTx(uint8_t *data, uint16_t dataLen);
   * @return None
   *****************************************************************************
   */
-void logUsartInit(UART_HandleTypeDef *husart)
-{
-//  husart->Instance = USART1;
-//  husart->Init.BaudRate = 115200;
-//  husart->Init.WordLength = UART_WORDLENGTH_8B;
-//  husart->Init.StopBits = UART_STOPBITS_1;
-//  husart->Init.Parity = UART_PARITY_NONE;
-//  husart->Init.Mode = UART_MODE_TX_RX;
-//  husart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
-//  husart->Init.OverSampling = UART_OVERSAMPLING_16;
-//  husart->Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-//  husart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-//  HAL_UART_Init(husart);
-  
-  pLogUsart = husart;
-}
+//void logUsartInit(UART_HandleTypeDef *husart)
+//{
+////  husart->Instance = USART1;
+////  husart->Init.BaudRate = 115200;
+////  husart->Init.WordLength = UART_WORDLENGTH_8B;
+////  husart->Init.StopBits = UART_STOPBITS_1;
+////  husart->Init.Parity = UART_PARITY_NONE;
+////  husart->Init.Mode = UART_MODE_TX_RX;
+////  husart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
+////  husart->Init.OverSampling = UART_OVERSAMPLING_16;
+////  husart->Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+////  husart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+////  HAL_UART_Init(husart);
+//  
+//  pLogUsart = husart;
+//}
 
 /**
   *****************************************************************************
@@ -118,20 +118,20 @@ void logUsartInit(UART_HandleTypeDef *husart)
   * @retval others             : HAL status
   *****************************************************************************
   */
-HAL_StatusTypeDef logUsartTx(uint8_t *data, uint16_t dataLen)
-{
-  if(pLogUsart == 0)
-    return ERR_INVALID_HANDLE;
- #if (USE_LOGGER == LOGGER_ON)
-  { 
-    return HAL_UART_Transmit(pLogUsart, data, dataLen, USART_TIMEOUT);
-    }
-  #else
-  {
-    return 0;
-  }
-  #endif /* #if USE_LOGGER == LOGGER_ON */
-}
+//HAL_StatusTypeDef logUsartTx(uint8_t *data, uint16_t dataLen)
+//{
+//  if(pLogUsart == 0)
+//    return ERR_INVALID_HANDLE;
+// #if (USE_LOGGER == LOGGER_ON)
+//  { 
+//    return HAL_UART_Transmit(pLogUsart, data, dataLen, USART_TIMEOUT);
+//    }
+//  #else
+//  {
+//    return 0;
+//  }
+//  #endif /* #if USE_LOGGER == LOGGER_ON */
+//}
 
 /**
   *****************************************************************************
@@ -142,6 +142,7 @@ HAL_StatusTypeDef logUsartTx(uint8_t *data, uint16_t dataLen)
   * @return Number of data sent
   *****************************************************************************
   */
+void USART_SendStringData(unsigned char * datasource, unsigned char sendsize);
 int logUsart(const char* format, ...)
 {
   #if (USE_LOGGER == LOGGER_ON)
@@ -154,7 +155,8 @@ int logUsart(const char* format, ...)
     va_end(argptr);  
       
     /* */
-    logUsartTx((uint8_t*)buf, strlen(buf));
+//    logUsartTx((uint8_t*)buf, strlen(buf));
+    USART_SendStringData((uint8_t*)buf, strlen(buf));
     return cnt;
   }
   #else

@@ -32,7 +32,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #ifdef STM32G070xx
-#include "stm32G0xx_hal.h"
+//#include "stm32G0xx_ll.h"
 #else 
 #include "stm32f4xx_hal.h"
 #endif
@@ -122,12 +122,6 @@ extern "C" {
 #define PLATFORM_LED_AP2P_PORT       NFC08A1_LED5_PIN_PORT    /*!< GPIO port used for LED AP2P*/
 #endif /* ST25R3916B */
 
-//#define PLATFORM_USER_BUTTON_PIN     GPIO_PIN_13          /*!< GPIO pin user button       */
-//#define PLATFORM_USER_BUTTON_PORT    GPIOC    /*!< GPIO port user button      */
-/**
-  * @}
-  */
-
 /* Exported macro ------------------------------------------------------------*/
 /** @defgroup PTD_Platform_Exported_Macro
  *  @{
@@ -159,24 +153,24 @@ extern "C" {
 #define platformLedOn( port, pin )                    platformGpioSet(port, pin)                    /*!< Turns the given LED On                      */
 #define platformLedToogle( port, pin )                platformGpioToogle(port, pin)                 /*!< Toogle the given LED                        */
 
-#define platformGpioSet( port, pin )                  HAL_GPIO_WritePin(port, pin, GPIO_PIN_SET)    /*!< Turns the given GPIO High                   */
-#define platformGpioClear( port, pin )                HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET)  /*!< Turns the given GPIO Low                    */
-#define platformGpioToogle( port, pin )               HAL_GPIO_TogglePin(port, pin)                 /*!< Toogles the given GPIO                      */
-#define platformGpioIsHigh( port, pin )               (HAL_GPIO_ReadPin(port, pin) == GPIO_PIN_SET) /*!< Checks if the given LED is High             */
-#define platformGpioIsLow( port, pin )                (!platformGpioIsHigh(port, pin))              /*!< Checks if the given LED is Low              */
+#define platformGpioSet( port, pin )                  LL_GPIO_SetOutputPin(port, pin)               /*!< Turns the given GPIO High                   */
+#define platformGpioClear( port, pin )                LL_GPIO_ResetOutputPin(port, pin)             /*!< Turns the given GPIO Low                    */
+#define platformGpioToogle( port, pin )               LL_GPIO_TogglePin(port, pin)                  /*!< Toogles the given GPIO                      */
+#define platformGpioIsHigh( port, pin )               (LL_GPIO_IsInputPinSet(port, pin))            /*!< Checks if the given LED is High             */
+#define platformGpioIsLow( port, pin )                (!LL_GPIO_IsInputPinSet(port, pin))           /*!< Checks if the given LED is Low              */
 
 #define platformTimerCreate( t )                      timerCalculateTimer(t)                        /*!< Create a timer with the given time (ms)     */
 #define platformTimerIsExpired( timer )               timerIsExpired(timer)                         /*!< Checks if the given timer is expired        */
 #define platformTimerDestroy( timer )                                                               /*!< Stop and release the given timer            */
-#define platformDelay( t )                            HAL_Delay( t )                                /*!< Performs a delay for the given time (ms)    */
+#define platformDelay( t )                            LL_mDelay( t )                                /*!< Performs a delay for the given time (ms)    */
 
-#define platformGetSysTick()                          BSP_GetTick()                                 /*!< Get System Tick ( 1 tick = 1 ms)            */
+#define platformGetSysTick()                          LL_GetTick()                                 /*!< Get System Tick ( 1 tick = 1 ms)            */
 
 #define platformErrorHandle()                         Error_Handler()             /*!< Global error handler or trap                */
 
 #define platformSpiSelect()                           platformGpioClear(ST25R_SS_PORT, ST25R_SS_PIN)/*!< SPI SS\CS: Chip|Slave Select                */
 #define platformSpiDeselect()                         platformGpioSet(ST25R_SS_PORT, ST25R_SS_PIN)  /*!< SPI SS\CS: Chip|Slave Deselect              */
-#define platformSpiTxRx( txBuf, rxBuf, len )          BSP_SPI1_SendRecv(txBuf, rxBuf, len)          /*!< SPI transceive                              */
+#define platformSpiTxRx( txBuf, rxBuf, len )          BSP_SPI1_SendRecv_LL(txBuf, rxBuf, len)          /*!< SPI transceive                              */
 
 
 #define platformI2CTx( txBuf, len, last, txOnly )     BSP_I2C1_SequencialSend((uint16_t)0xA0, (uint8_t *)(txBuf), (len), last, txOnly ) /*!< I2C Transmit                                */
@@ -188,6 +182,7 @@ extern "C" {
 #define platformI2CSlaveAddrRD(add)                                                                 /*!< I2C Slave address for Read operation        */
 
 #define platformLog(...)                              logUsart(__VA_ARGS__)                         /*!< Log  method                                 */
+
 
 /**
   * @}

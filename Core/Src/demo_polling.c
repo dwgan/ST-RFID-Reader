@@ -303,7 +303,7 @@ bool demoIni( void )
             return false;
         }
 
-        state = DEMO_ST_START_DISCOVERY;
+		state = DEMO_ST_START_DISCOVERY;
         return true;
     }
     return false;
@@ -317,221 +317,151 @@ bool demoIni( void )
  *  It must be called periodically
  *****************************************************************************
  */
-void demoCycle( void )
+void demoCycle( bool enable )
 {
-		char * p_id;
-//    static rfalNfcDevice *nfcDevice;  //����ע���ˣ������ں������涨��ȫ�ֱ���(line150)���Է������ߵ��Բ鿴��ֵ
-    rfalNfcWorker();                                    /* Run RFAL worker periodically */
-		
+  char * p_id;
+//      static rfalNfcDevice *nfcDevice;  //����ע���ˣ������ں������涨��ȫ�ֱ���(line150)���Է������ߵ��Բ鿴��ֵ
+  rfalNfcWorker();                                    /* Run RFAL worker periodically */
+  
 #if defined(PLATFORM_USER_BUTTON_PORT) && defined(PLATFORM_USER_BUTTON_PIN)
-    /*******************************************************************************/
-    /* Check if USER button is pressed */
-    if( platformGpioIsLow(PLATFORM_USER_BUTTON_PORT, PLATFORM_USER_BUTTON_PIN))
-    {
-        discParam.wakeupEnabled = !discParam.wakeupEnabled;    /* enable/disable wakeup */
-        state = DEMO_ST_START_DISCOVERY;                       /* restart loop          */
-        platformLog("Toggling Wake Up mode %s\r\n", discParam.wakeupEnabled ? "ON": "OFF");
-
-        /* Debounce button */
-        while( platformGpioIsLow(PLATFORM_USER_BUTTON_PORT, PLATFORM_USER_BUTTON_PIN) );
-    }
-#endif /* PLATFORM_USER_BUTTON_PIN */
+  /*******************************************************************************/
+  /* Check if USER button is pressed */
+  if( platformGpioIsLow(PLATFORM_USER_BUTTON_PORT, PLATFORM_USER_BUTTON_PIN))
+  {
+    discParam.wakeupEnabled = !discParam.wakeupEnabled;    /* enable/disable wakeup */
+    state = DEMO_ST_START_DISCOVERY;                       /* restart loop          */
+    platformLog("Toggling Wake Up mode %s\r\n", discParam.wakeupEnabled ? "ON": "OFF");
     
-    switch( state )
+    /* Debounce button */
+    while( platformGpioIsLow(PLATFORM_USER_BUTTON_PORT, PLATFORM_USER_BUTTON_PIN) );
+  }
+#endif /* PLATFORM_USER_BUTTON_PIN */
+  
+  switch( state )
+  {
+    /*******************************************************************************/
+  case DEMO_ST_START_DISCOVERY:
+    if (enable)
     {
-        /*******************************************************************************/
-        case DEMO_ST_START_DISCOVERY:
-          rfalNfcDeactivate( RFAL_NFC_DEACTIVATE_IDLE );
-          rfalNfcDiscover( &discParam );
+        rfalNfcDeactivate( RFAL_NFC_DEACTIVATE_IDLE );
+        rfalNfcDiscover( &discParam );
         
-          multiSel = false;
-          state    = DEMO_ST_DISCOVERY;
-          break;
-
-        /*******************************************************************************/
-        case DEMO_ST_DISCOVERY:
-        
-            if( rfalNfcIsDevActivated( rfalNfcGetState() ) )    //��⵽�п�      
-            {
-#if USE_UART_PORT_AS_GPIO
-                        	   NFC_Detected();
-#endif
-//								HAL_GPIO_WritePin(LED6_GPIO_Port,LED6_Pin,GPIO_PIN_SET);
-//								HAL_GPIO_WritePin(LED7_GPIO_Port,LED7_Pin,GPIO_PIN_SET);
-//								StackBaseSetDioLevel(1);
-                rfalNfcGetActiveDevice( &nfcDevice );
-								p_id = hex2Str( nfcDevice->nfcid, nfcDevice->nfcidLen );								
-                switch( nfcDevice->type )
-                {
-                    /*******************************************************************************/
-                    case RFAL_NFC_LISTEN_TYPE_NFCA:
-                        switch( nfcDevice->dev.nfca.type )
-                        {
-                           case RFAL_NFCA_T1T:
-																platformLog("ISO14443A/Topaz (NFC-A T1T) TAG found. UID: %s\r\n", p_id );
-//																rxData[PDINSIZE-1]=0x03;
-//																for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//																{
-//																	rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//																}
-															
-														break;
-                            
-                            case RFAL_NFCA_T4T:
-																platformLog("NFCA Passive ISO-DEP device found. UID: %s\r\n", p_id );
-//																rxData[PDINSIZE-1]=0x04;
-//																for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//																{
-//																	rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//																}
-//                                demoAPDU();
-                                break;
-                            
-                            case RFAL_NFCA_T4T_NFCDEP:
-                            case RFAL_NFCA_NFCDEP:
-																platformLog("NFCA Passive P2P device found. NFCID: %s\r\n", p_id );
-//																rxData[PDINSIZE-1]=0x05;
-//																for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//																{
-//																	rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//																}
-//                                demoP2P( nfcDevice );
-                                break;
-                                
-                            default:
-																platformLog("ISO14443A/NFC-A card found. UID: %s\r\n", hex2Str( nfcDevice->nfcid, nfcDevice->nfcidLen ) );
-//																rxData[PDINSIZE-1]=0x02;
-//																for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//																{
-//																	rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//																}
-//                                demoT2t();
-                                break;
-                        }
-                        break;
-                    
-                    /*******************************************************************************/
-                    case RFAL_NFC_LISTEN_TYPE_NFCB:
-                        
-												platformLog("ISO14443B/NFC-B card found. UID: %s\r\n", p_id );
-//												rxData[PDINSIZE-1]=0x06;
-//												for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//												{
-//													rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//												}
-                        if( rfalNfcbIsIsoDepSupported( &nfcDevice->dev.nfcb ) )
-                        {
-//                            demoAPDU();
-                        }
-                        break;
-                        
-                    /*******************************************************************************/
-                    case RFAL_NFC_LISTEN_TYPE_NFCF:
-                        
-                        if( rfalNfcfIsNfcDepSupported( &nfcDevice->dev.nfcf ) )
-                        {
-														platformLog("NFCF Passive P2P device found. NFCID: %s\r\n", p_id );
-//														rxData[PDINSIZE-1]=7;
-//														for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//														{
-//															rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//														}
-		//													demoP2P( nfcDevice );
-                        }
-                        else
-                        {
-                            platformLog("Felica/NFC-F card found. UID: %s\r\n", p_id);
-//                            rxData[PDINSIZE-1]=8;
-//														for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//														{
-//															rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//														}
-////                            demoNfcf( &nfcDevice->dev.nfcf );
-                        }
-                        
-                        break;
-
-                    /*******************************************************************************/
-                    case RFAL_NFC_LISTEN_TYPE_NFCV:
-                        {
-                            uint8_t devUID[RFAL_NFCV_UID_LEN];
-                            ST_MEMCPY( devUID, nfcDevice->nfcid, nfcDevice->nfcidLen );   /* Copy the UID into local var */
-//														REVERSE_BYTES( devUID, RFAL_NFCV_UID_LEN );                 /* Reverse the UID for display purposes */
-//														p_id = hex2Str(devUID, RFAL_NFCV_UID_LEN);
-														platformLog("ISO15693/NFC-V card found. UID: %s\r\n",p_id);
-//														rxData[PDINSIZE-1]=0x01;
-//                            for(uint8_t i =0;i<NFC_ID_LENGTH;i++)
-//														{
-//															rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//														}
-//                            demoNfcv( &nfcDevice->dev.nfcv );
-                        }
-                        break;
- 
-                    /*******************************************************************************/
-                    case RFAL_NFC_LISTEN_TYPE_ST25TB:
-                        
-                        platformLog("ST25TB card found. UID: %s\r\n", p_id);
-//												rxData[PDINSIZE-1]=9;
-//												for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//												{
-//													rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//												}
-                        break;
-                    
-                    /*******************************************************************************/
-                    case RFAL_NFC_LISTEN_TYPE_AP2P:
-                    case RFAL_NFC_POLL_TYPE_AP2P:
-                        
-                        platformLog("NFC Active P2P device found. NFCID3: %s\r\n", p_id);
-//												rxData[PDINSIZE-1]=10;
-//												for(uint8_t i =0;i<2*nfcDevice->nfcidLen;i++)
-//												{
-//													rxData[PDINSIZE-NFC_ID_LENGTH-1+i]=*p_id++;
-//												}
-                        demoP2P( nfcDevice );
-                        break;
-                    
-                    /*******************************************************************************/
-                    case RFAL_NFC_POLL_TYPE_NFCA:
-                    case RFAL_NFC_POLL_TYPE_NFCF:
-                        
-                        platformLog("Activated in CE %s mode.\r\n", (nfcDevice->type == RFAL_NFC_POLL_TYPE_NFCA) ? "NFC-A" : "NFC-F");
-//												rxData[PDINSIZE-1] = (nfcDevice->type == RFAL_NFC_POLL_TYPE_NFCA) ? 11 : 12;
-//                        demoCE( nfcDevice );
-                        break;
-
-                    /*******************************************************************************/
-                    default:
-                        break;
-                }
-                
-                rfalNfcDeactivate( RFAL_NFC_DEACTIVATE_IDLE );
-
-#if !defined(DEMO_NO_DELAY_IN_DEMOCYCLE)
-                switch( nfcDevice->type )
-                {
-                    case RFAL_NFC_POLL_TYPE_NFCA:
-                    case RFAL_NFC_POLL_TYPE_NFCF:
-                        break; /* When being in card emulation don't delay as some polling devices (phones) rely on tags to be re-discoverable */
-                    default:
-                        platformDelay(500); /* Delay before re-starting polling loop to not flood the UART log with re-discovered tags */
-                }
-#endif /* DEMO_NO_DELAY_IN_DEMOCYCLE */
-                
-                state = DEMO_ST_START_DISCOVERY;
-            }
-            else
-            {
-//							HAL_GPIO_WritePin(LED6_GPIO_Port,LED6_Pin,GPIO_PIN_RESET);
-            }
-            break;
-
-        /*******************************************************************************/
-        case DEMO_ST_NOTINIT:
-        default:
-            break;
+        multiSel = false;
+        state    = DEMO_ST_DISCOVERY;
     }
+    break;
+    
+    /*******************************************************************************/
+  case DEMO_ST_DISCOVERY:
+    
+    if( rfalNfcIsDevActivated( rfalNfcGetState() ) )    //��⵽�п�      
+    {
+#if USE_UART_PORT_AS_GPIO
+      NFC_Detected();
+#endif
+      rfalNfcGetActiveDevice( &nfcDevice );
+      p_id = hex2Str( nfcDevice->nfcid, nfcDevice->nfcidLen );
+      rfalNfcDeactivate( RFAL_NFC_DEACTIVATE_IDLE );
+      switch( nfcDevice->type )
+      {
+        /*******************************************************************************/
+      case RFAL_NFC_LISTEN_TYPE_NFCA:
+        switch( nfcDevice->dev.nfca.type )
+        {
+        case RFAL_NFCA_T1T:
+          platformLog("ISO14443A/Topaz (NFC-A T1T) TAG found. UID: %s\r\n", p_id );
+          break;
+          
+        case RFAL_NFCA_T4T:
+          platformLog("NFCA Passive ISO-DEP device found. UID: %s\r\n", p_id );
+          break;
+          
+        case RFAL_NFCA_T4T_NFCDEP:
+        case RFAL_NFCA_NFCDEP:
+          platformLog("NFCA Passive P2P device found. NFCID: %s\r\n", p_id );
+          break;
+          
+        default:
+          platformLog("ISO14443A/NFC-A card found. UID: %s\r\n", hex2Str( nfcDevice->nfcid, nfcDevice->nfcidLen ) );
+          break;
+        }
+        break;
+        
+        /*******************************************************************************/
+      case RFAL_NFC_LISTEN_TYPE_NFCB:
+        platformLog("ISO14443B/NFC-B card found. UID: %s\r\n", p_id );
+        break;
+        
+        /*******************************************************************************/
+      case RFAL_NFC_LISTEN_TYPE_NFCF:
+        
+        if( rfalNfcfIsNfcDepSupported( &nfcDevice->dev.nfcf ) )
+        {
+          platformLog("NFCF Passive P2P device found. NFCID: %s\r\n", p_id );
+        }
+        else
+        {
+          platformLog("Felica/NFC-F card found. UID: %s\r\n", p_id);
+        }
+        
+        break;
+        
+        /*******************************************************************************/
+      case RFAL_NFC_LISTEN_TYPE_NFCV:
+        {
+          uint8_t devUID[RFAL_NFCV_UID_LEN];
+          ST_MEMCPY( devUID, nfcDevice->nfcid, nfcDevice->nfcidLen );   /* Copy the UID into local var */
+          platformLog("ISO15693/NFC-V card found. UID: %s\r\n",p_id);
+        }
+        break;
+        
+        /*******************************************************************************/
+      case RFAL_NFC_LISTEN_TYPE_ST25TB:
+        platformLog("ST25TB card found. UID: %s\r\n", p_id);
+        break;
+        
+        /*******************************************************************************/
+      case RFAL_NFC_LISTEN_TYPE_AP2P:
+      case RFAL_NFC_POLL_TYPE_AP2P:
+        platformLog("NFC Active P2P device found. NFCID3: %s\r\n", p_id);
+        demoP2P( nfcDevice );
+        break;
+        
+        /*******************************************************************************/
+      case RFAL_NFC_POLL_TYPE_NFCA:
+      case RFAL_NFC_POLL_TYPE_NFCF:
+        platformLog("Activated in CE %s mode.\r\n", (nfcDevice->type == RFAL_NFC_POLL_TYPE_NFCA) ? "NFC-A" : "NFC-F");
+        break;
+        
+        /*******************************************************************************/
+      default:
+        break;
+      }
+      
+      
+#if !defined(DEMO_NO_DELAY_IN_DEMOCYCLE)
+      switch( nfcDevice->type )
+      {
+      case RFAL_NFC_POLL_TYPE_NFCA:
+      case RFAL_NFC_POLL_TYPE_NFCF:
+        break; /* When being in card emulation don't delay as some polling devices (phones) rely on tags to be re-discoverable */
+      default:
+        platformDelay(500); /* Delay before re-starting polling loop to not flood the UART log with re-discovered tags */
+      }
+#endif /* DEMO_NO_DELAY_IN_DEMOCYCLE */
+      
+      state = DEMO_ST_START_DISCOVERY;
+    }
+    else
+    {
+    }
+    break;
+    
+    /*******************************************************************************/
+  case DEMO_ST_NOTINIT:
+  default:
+    break;
+  }
 }
 
 static void demoCE( rfalNfcDevice *nfcDev )
@@ -660,7 +590,7 @@ static void demoNfcv( rfalNfcvListenDevice *nfcvDev )
     * with addressed mode (uid != NULL) or selected mode (uid == NULL)
     */
     err = rfalNfcvPollerReadSingleBlock(reqFlag, uid, blockNum, rxBuf, sizeof(rxBuf), &rcvLen);
-    platformLog(" Read Block: %s %s\r\n", (err != ERR_NONE) ? "FAIL": "OK Data:", (err != ERR_NONE) ? "" : hex2Str( &rxBuf[1], DEMO_NFCV_BLOCK_LEN));
+//    platformLog(" Read Block: %s %s\r\n", (err != ERR_NONE) ? "FAIL": "OK Data:", (err != ERR_NONE) ? "" : hex2Str( &rxBuf[1], DEMO_NFCV_BLOCK_LEN));
  
     #if DEMO_NFCV_WRITE_TAG /* Writing example */
         err = rfalNfcvPollerWriteSingleBlock(reqFlag, uid, blockNum, wrData, sizeof(wrData));

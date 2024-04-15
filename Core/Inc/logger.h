@@ -67,7 +67,7 @@
  *
  *****************************************************************************
  */
-extern void logUsartInit(UART_HandleTypeDef *husart);
+//extern void logUsartInit(UART_HandleTypeDef *husart);
 
 /*!
  *****************************************************************************

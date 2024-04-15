@@ -49,7 +49,7 @@ extern "C" {
  *  @{
  */
 bool demoIni( void );
-void demoCycle(void);
+void demoCycle( bool enable );
 /*
 ******************************************************************************
 * GLOBAL DEFINES

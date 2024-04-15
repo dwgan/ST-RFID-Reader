@@ -2,7 +2,7 @@
 <project>
     <fileVersion>4</fileVersion>
     <configuration>
-        <name>ST-RFID-Reader</name>
+        <name>STM32G070-LL</name>
         <toolchain>
             <name>ARM</name>
         </toolchain>
